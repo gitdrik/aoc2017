@@ -1,4 +1,3 @@
-import copy
 with open('06.txt') as f:
     banks = [int(x) for x in f.read().strip().split()]
 cn = {}
