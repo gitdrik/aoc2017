@@ -14,5 +14,6 @@ for l in ls:
     else:
         exec('if regs[l[4]] '+l[5]+l[6]+': regs[l[0]] -= int(l[2])')
     mx = max([mx]+list(regs.values()))
+    
 print('Part 1: ', max(regs.values()))
 print('Part 2:', mx)
