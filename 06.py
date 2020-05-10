@@ -1,5 +1,5 @@
 with open('06.txt') as f:
-    banks = [int(x) for x in f.read().strip().split()]
+    banks = [int(x) for x in f.read().split()]
 cn = {}
 i = 0
 while tuple(banks) not in cn:
