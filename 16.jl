@@ -1,40 +1,49 @@
-function dance(chrs)
-    chars = copy(chrs)
-    open("16.txt") do f
-        cmds = split(readline(f),',')
-        for cmd in cmds
-            if cmd[1] == 'x'
-                a, b = parse.(Int, split(cmd[2:end],'/')).+1
-                chars[a], chars[b] = chars[b], chars[a]
-            elseif cmd[1] == 'p'
-                a, b = findfirst(chars.==cmd[2]), findfirst(chars.==cmd[4])
-                chars[a], chars[b] = chars[b], chars[a]
-            elseif cmd[1] == 's'
-                a = parse(Int,cmd[2:end])
-                chars = [chars[end-a+1:end]; chars[1:end-a]]
+open("16.txt") do f
+    ls = readlines(f)
+    fields = []
+    for l in ls[1:20]
+        r1, r2 = split(l,": ")[2] |> s->split(s," or ") .|>
+                 s->split(s, '-') |> ss->parse.(Int, ss) |> r->r[1]:r[2]
+        push!(fields, [r1, r2])
+    end
+    myticket = parse.(Int, split(ls[23],','))
+    nearbys = [parse.(Int, split(l,',')) for l in ls[26:end]]
+    p1 = sum([n for n in Iterators.flatten(nearbys) if !any(n .∈ Iterators.flatten(fields))])
+    println("Part 1: ", p1)
+
+    valids = [myticket]
+    for t in nearbys
+        valid = true
+        for n in t
+            if !any(n .∈ Iterators.flatten(fields))
+                valid = false
+                break
+            end
+        end
+        if valid
+            push!(valids, t)
+        end
+    end
+
+    tnfs = falses(length(valids), length(myticket), length(fields))
+    for (i, t) ∈ enumerate(valids), (j, n) ∈ enumerate(t), (k, f) ∈ enumerate(fields)
+        tnfs[i,j,k] = any(n .∈ f)
+    end
+
+    fm = [sum([all(tnfs[:,n,i]) for n in 1:20]) for i in 1:20]
+    searchorder = sortperm(fm)
+    fieldorder = []
+    p2 = 1
+    for i ∈ searchorder
+        for j in setdiff(Set(1:20), Set(fieldorder))
+            if all(tnfs[:,j,i])
+                push!(fieldorder, j)
+                if i ∈ 1:6
+                    p2 *= myticket[j]
+                end
+                break
             end
         end
     end
-    return chars
+    println("Part 2: ", p2)
 end
-
-function cyclodance(chars, times)
-    newchars = copy(chars)
-    i = 0
-    while true
-        newchars = dance(newchars)
-        i += 1
-        if newchars == chars
-            break
-        end
-    end
-    iters = times % i
-    for i in 1:iters
-        newchars = dance(newchars)
-    end
-    return newchars
-end
-
-chars = collect("abcdefghijklmnop")
-println("Part 1: ", String(dance(chars)))
-println("Part 2: ", String(cyclodance(chars, 1000000000)))
