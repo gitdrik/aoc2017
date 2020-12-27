@@ -3,10 +3,10 @@ open("21.txt") do f
              a->a', a->rotr90(a'), a->rot180(a'), a->rotl90(a')]
     es = Dict{BitArray,BitArray}()
     for l ∈ eachline(f)
-        a, b = split(l, " => ")
+        a, b = split(l, " => ") .|>
+               a -> hcat([[c == '#' for c in s] for s in split(a,'/')]...)
         for p ∈ perms
-            es[p(hcat([[c == '#' for c in s] for s in split(a,'/')]...))] =
-                hcat([[c == '#' for c in s] for s in split(b,'/')]...)
+            es[p(a)] = b
         end
     end
     function enhance(img, times)
