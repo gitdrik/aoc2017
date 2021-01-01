@@ -2,7 +2,7 @@ open("24.txt") do f
     cs = Set([parse.(Int, split(s,'/')) for s in readlines(f)])
     function strongest(cs, bridge, pins)
         ncs = filter(a -> pins ∈ a, cs)
-        isempty(ncs) && return sum(sum.(bridge))
+        isempty(ncs) && return sum(sum(bridge))
         return maximum([strongest(setdiff(cs,[c]),[bridge;[c]], c[1]==pins ? c[2] : c[1]) for c in ncs])
     end
     println("Part 1: ", strongest(cs, [], 0))
@@ -18,12 +18,12 @@ open("24.txt") do f
             if blength > longestlength
                 longestlength = blength
                 longestbridge = b
-            elseif blength==longestlength && sum(sum.(b)) > sum(sum.(longestbridge))
+            elseif blength==longestlength && sum(sum(b)) > sum(sum(longestbridge))
                 longestlength = blength
                 longestbridge = b
             end
         end
         return longestbridge
     end
-    println("Part 2: ", sum(sum.(longest(cs, [], 0))))
+    println("Part 2: ", sum(sum(longest(cs, [], 0))))
 end
