@@ -10,7 +10,7 @@ function turingchecksum()
     state, pos = 'A', 0
     mem = Set{Int}()
     for t ∈ 1:12919244
-        (bit, move, state) = states[state][pos ∈ mem]
+        bit, move, state = states[state][pos ∈ mem]
         bit ? push!(mem, pos) : delete!(mem, pos)
         pos += move
     end
